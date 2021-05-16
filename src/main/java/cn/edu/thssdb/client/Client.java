@@ -1,8 +1,20 @@
 package cn.edu.thssdb.client;
 
+import cn.edu.thssdb.parser.SQLBaseListener;
+import cn.edu.thssdb.parser.SQLLexer;
+import cn.edu.thssdb.parser.SQLParser;
+import cn.edu.thssdb.rpc.thrift.ExecuteStatementReq;
+import cn.edu.thssdb.rpc.thrift.ExecuteStatementResp;
 import cn.edu.thssdb.rpc.thrift.GetTimeReq;
 import cn.edu.thssdb.rpc.thrift.IService;
+import cn.edu.thssdb.schema.Manager;
+import cn.edu.thssdb.server.ThssDB;
 import cn.edu.thssdb.utils.Global;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -69,7 +81,8 @@ public class Client {
             open = false;
             break;
           default:
-            println("Invalid statements!");
+            execute(msg);
+            println("语法分析在搞了在搞了，现在只有\"quit;\"和\"show time;\"能用");
             break;
         }
         long endTime = System.currentTimeMillis();
@@ -154,5 +167,17 @@ public class Client {
 
   static void println(String msg) {
     SCREEN_PRINTER.println(msg);
+  }
+
+  private static void execute(String msg) {
+    CodePointCharStream charStream = CharStreams.fromString(msg);
+    SQLLexer lexer = new SQLLexer(charStream);
+    CommonTokenStream tokens = new CommonTokenStream(lexer);
+    SQLParser parser = new SQLParser(tokens);
+    ParseTree tree = parser.parse();
+    ParseTreeWalker walker = new ParseTreeWalker();
+    SQLBaseListener listener = new SQLBaseListener();
+    walker.walk(listener, tree);
+    //resp.setStatus(new Status(Global.SUCCESS_CODE));
   }
 }
