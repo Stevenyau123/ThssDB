@@ -1,0 +1,1 @@
+如果报raw.githubusercontent.com拒绝连接的错，就根据你的操作系统，从附件中选择合适的thrift可执行文件，放入ThssDB/target/tools文件夹下。
