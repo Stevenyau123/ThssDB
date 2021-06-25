@@ -2,6 +2,8 @@ package cn.edu.thssdb.schema;
 
 import cn.edu.thssdb.query.QueryResult;
 import cn.edu.thssdb.query.QueryTable;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -10,6 +12,7 @@ public class Database {
   private String name;
   private HashMap<String, Table> tables;
   ReentrantReadWriteLock lock;
+
 
   public Database(String name) {
     this.name = name;
@@ -20,10 +23,12 @@ public class Database {
 
   private void persist() {
     // TODO
+
   }
 
   public void create(String name, Column[] columns) {
     // TODO
+
   }
 
   public void drop() {

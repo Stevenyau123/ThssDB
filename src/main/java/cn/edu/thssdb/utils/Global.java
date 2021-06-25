@@ -13,5 +13,9 @@ public class Global {
   public static final String SHOW_TIME = "show time;";
   public static final String QUIT = "quit;";
 
+  public static final String USERNAME = "root";
+  public static final String PASSWORD = "";
+
   public static final String S_URL_INTERNAL = "jdbc:default:connection";
+  public static String STORE_PATH = "/save/";
 }

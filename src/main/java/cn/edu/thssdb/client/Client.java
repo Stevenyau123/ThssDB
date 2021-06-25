@@ -1,8 +1,20 @@
 package cn.edu.thssdb.client;
 
+import cn.edu.thssdb.parser.SQLBaseListener;
+import cn.edu.thssdb.parser.SQLLexer;
+import cn.edu.thssdb.parser.SQLParser;
+import cn.edu.thssdb.rpc.thrift.ExecuteStatementReq;
+import cn.edu.thssdb.rpc.thrift.ExecuteStatementResp;
 import cn.edu.thssdb.rpc.thrift.GetTimeReq;
 import cn.edu.thssdb.rpc.thrift.IService;
+import cn.edu.thssdb.schema.Manager;
+import cn.edu.thssdb.server.ThssDB;
 import cn.edu.thssdb.utils.Global;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -69,7 +81,8 @@ public class Client {
             open = false;
             break;
           default:
-            println("Invalid statements!");
+            execute(msg);
+            println("语法分析在搞了在搞了，现在只有\"quit;\"和\"show time;\"能用");
             break;
         }
         long endTime = System.currentTimeMillis();
@@ -154,5 +167,43 @@ public class Client {
 
   static void println(String msg) {
     SCREEN_PRINTER.println(msg);
+  }
+
+  private static void execute(String msg) {
+    CodePointCharStream charStream = CharStreams.fromString(msg);
+    SQLLexer lexer = new SQLLexer(charStream);
+    CommonTokenStream tokens = new CommonTokenStream(lexer);
+    SQLParser parser = new SQLParser(tokens);
+    //ParseTree tree = parser.parse();
+    SQLParser.ParseContext root = parser.parse();
+    System.out.println(root.sql_stmt_list().sql_stmt().size());
+//    int type = root.sql_stmt_list().sql_stmt().get(0).getStart().getType();
+//    if (type == SQLParser.K_SELECT) {
+//      // parse select
+//      SQLParser.Select_stmtContext ctx = root.sql_stmt_list().sql_stmt().get(0).select_stmt();
+//      System.out.println(ctx.toStringTree());
+//      System.out.println(ctx.result_column().size());
+//      System.out.println(ctx.result_column().get(1).getText());
+//      System.out.println(ctx.table_query().get(0).getText());
+//      SQLParser.Multiple_conditionContext conditions = ctx.multiple_condition();
+//      // parse first condition
+//      SQLParser.ConditionContext condition = conditions.condition();
+//      System.out.println(condition.getText());
+//      System.out.println(condition.expression().size());
+//      System.out.println(condition.expression().get(0).getText());
+//      System.out.println(condition.expression().get(1).getText());
+//      System.out.println(condition.comparator().getText());
+//      // check whether other condition exists
+//      System.out.println(conditions.multiple_condition().size());
+//    }
+//    SQLParser.Sql_stmtContext s2 = root.sql_stmt_list().sql_stmt().get(1);
+//    type = s2.getStart().getType();
+//    if (type == SQLParser.K_INSERT) {
+//      System.out.print("insert detected");
+//    }
+//    ParseTreeWalker walker = new ParseTreeWalker();
+//    SQLBaseListener listener = new SQLBaseListener();
+//    walker.walk(listener, tree);
+    //resp.setStatus(new Status(Global.SUCCESS_CODE));
   }
 }
